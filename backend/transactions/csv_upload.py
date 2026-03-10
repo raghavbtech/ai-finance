@@ -6,6 +6,42 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Transaction
+from ml_models.category_classifier import predict_category
+
+
+def is_bank_statement(columns):
+    bank_cols = {'date', 'details', 'debit'}
+    return bank_cols.issubset(set(c.lower().strip() for c in columns))
+
+
+def normalize_bank_statement(df):
+    df.columns = [c.lower().strip() for c in df.columns]
+
+    rows = []
+    for _, row in df.iterrows():
+        debit = row.get('debit', '')
+        if pd.isna(debit) or str(debit).strip() == '':
+            continue
+
+        try:
+            amount = float(str(debit).replace(',', '').strip())
+            if amount <= 0:
+                continue
+        except ValueError:
+            continue
+
+        description = str(row.get('details', '')).strip()
+        if not description:
+            continue
+
+        rows.append({
+            'date': row['date'],
+            'description': description,
+            'amount': amount,
+            'category': predict_category(description),
+        })
+
+    return pd.DataFrame(rows)
 
 
 @api_view(['POST'])
@@ -24,10 +60,15 @@ def upload_csv(request):
     except Exception:
         return Response({'error': 'Could not read CSV file'}, status=status.HTTP_400_BAD_REQUEST)
 
-    required_columns = {'amount', 'description', 'category', 'date'}
-    if not required_columns.issubset(df.columns):
-        missing = required_columns - set(df.columns)
-        return Response({'error': f'Missing columns: {missing}'}, status=status.HTTP_400_BAD_REQUEST)
+    if is_bank_statement(df.columns):
+        df = normalize_bank_statement(df)
+        if df.empty:
+            return Response({'error': 'No debit transactions found in bank statement'}, status=status.HTTP_400_BAD_REQUEST)
+    else:
+        required_columns = {'amount', 'description', 'category', 'date'}
+        if not required_columns.issubset(df.columns):
+            missing = required_columns - set(df.columns)
+            return Response({'error': f'Missing columns: {missing}'}, status=status.HTTP_400_BAD_REQUEST)
 
     valid_categories = {'food', 'transport', 'shopping', 'entertainment', 'health', 'utilities', 'other'}
     created = 0
@@ -35,14 +76,14 @@ def upload_csv(request):
 
     for i, row in df.iterrows():
         try:
-            row_date = pd.to_datetime(row['date']).date()
+            row_date = pd.to_datetime(row['date'], dayfirst=True).date()
             if row_date > date.today():
                 errors.append(f'Row {i + 1}: Date {row_date} is in the future, skipped.')
                 continue
 
-            category = str(row['category']).lower().strip()
+            category = str(row.get('category', 'other')).lower().strip()
             if category not in valid_categories:
-                category = 'other'
+                category = predict_category(str(row.get('description', '')))
 
             Transaction.objects.create(
                 user=request.user,

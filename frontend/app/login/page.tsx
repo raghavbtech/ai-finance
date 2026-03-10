@@ -14,7 +14,6 @@ export default function LoginPage() {
     e.preventDefault()
     setError('')
     setLoading(true)
-
     try {
       if (isRegister) {
         await api.post('/register/', form)
@@ -31,51 +30,68 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-950">
-      <div className="bg-gray-900 p-8 rounded-xl w-full max-w-sm border border-gray-800">
-        <h1 className="text-2xl font-bold mb-2 text-white">AI Finance</h1>
-        <p className="text-gray-400 text-sm mb-6">
-          {isRegister ? 'Create your account' : 'Sign in to your account'}
-        </p>
+    <div className="min-h-screen bg-[#f5f4f0] dark:bg-[#0f1117] flex items-center justify-center px-4">
+      <div className="w-full max-w-sm">
+        <div className="flex items-center gap-2 justify-center mb-8">
+          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
+            <span className="text-white font-bold text-sm">AI</span>
+          </div>
+          <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">Finance</span>
+        </div>
 
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="text"
-            placeholder="Username"
-            value={form.username}
-            onChange={e => setForm({ ...form, username: e.target.value })}
-            className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-            required
-          />
-          <input
-            type="password"
-            placeholder="Password"
-            value={form.password}
-            onChange={e => setForm({ ...form, password: e.target.value })}
-            className="bg-gray-800 border border-gray-700 rounded-lg px-4 py-2.5 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-            required
-          />
+        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
+          <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
+            {isRegister ? 'Create an account' : 'Welcome back'}
+          </h1>
+          <p className="text-gray-400 text-sm mb-6">
+            {isRegister ? 'Sign up to get started' : 'Sign in to your account'}
+          </p>
 
-          {error && <p className="text-red-400 text-sm">{error}</p>}
+          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+            <div>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 block">Username</label>
+              <input
+                type="text"
+                placeholder="Enter username"
+                value={form.username}
+                onChange={e => setForm({ ...form, username: e.target.value })}
+                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
+            <div>
+              <label className="text-xs font-medium text-gray-600 dark:text-gray-400 mb-1.5 block">Password</label>
+              <input
+                type="password"
+                placeholder="Enter password"
+                value={form.password}
+                onChange={e => setForm({ ...form, password: e.target.value })}
+                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                required
+              />
+            </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2.5 text-sm font-medium disabled:opacity-50"
-          >
-            {loading ? 'Please wait...' : isRegister ? 'Register' : 'Login'}
-          </button>
-        </form>
+            {error && <p className="text-red-500 text-xs">{error}</p>}
 
-        <p className="text-center text-sm text-gray-500 mt-4">
-          {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
-          <button
-            onClick={() => { setIsRegister(!isRegister); setError('') }}
-            className="text-blue-400 hover:underline"
-          >
-            {isRegister ? 'Login' : 'Register'}
-          </button>
-        </p>
+            <button
+              type="submit"
+              disabled={loading}
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 transition-colors mt-1"
+            >
+              {loading ? 'Please wait...' : isRegister ? 'Create account' : 'Sign in'}
+            </button>
+          </form>
+
+          <p className="text-center text-xs text-gray-400 mt-5">
+            {isRegister ? 'Already have an account?' : "Don't have an account?"}{' '}
+            <button
+              onClick={() => { setIsRegister(!isRegister); setError('') }}
+              className="text-blue-600 hover:underline font-medium"
+            >
+              {isRegister ? 'Sign in' : 'Register'}
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   )

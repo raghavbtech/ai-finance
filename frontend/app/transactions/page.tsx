@@ -1,7 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
-import Navbar from '@/components/Navbar'
+import Sidebar from '@/components/Sidebar'
 import api from '@/services/api'
 
 type Transaction = {
@@ -14,8 +14,19 @@ type Transaction = {
 
 const emptyForm = { amount: '', description: '', category: 'other', date: '' }
 
+const categoryStyle: Record<string, string> = {
+  food: 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400',
+  transport: 'bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400',
+  shopping: 'bg-purple-50 text-purple-700 dark:bg-purple-900/20 dark:text-purple-400',
+  entertainment: 'bg-orange-50 text-orange-700 dark:bg-orange-900/20 dark:text-orange-400',
+  health: 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400',
+  utilities: 'bg-cyan-50 text-cyan-700 dark:bg-cyan-900/20 dark:text-cyan-400',
+  other: 'bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400',
+}
+
 export default function TransactionsPage() {
   const router = useRouter()
+  const [sidebarOpen, setSidebarOpen] = useState(false)
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [form, setForm] = useState(emptyForm)
   const [loading, setLoading] = useState(true)
@@ -33,10 +44,7 @@ export default function TransactionsPage() {
   useEffect(() => {
     const token = localStorage.getItem('access_token')
     if (!token) { router.push('/login'); return }
-
-    fetchTransactions()
-      .catch(() => router.push('/login'))
-      .finally(() => setLoading(false))
+    fetchTransactions().catch(() => router.push('/login')).finally(() => setLoading(false))
   }, [router])
 
   const showMessage = (text: string, error = false) => {
@@ -89,117 +97,158 @@ export default function TransactionsPage() {
     }
   }
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center text-gray-400">Loading...</div>
+  if (loading) return (
+    <div className="flex min-h-screen bg-[#f5f4f0] dark:bg-[#0f1117]">
+      <Sidebar />
+      <div className="flex-1 lg:ml-56 flex items-center justify-center text-gray-400 text-sm">Loading...</div>
+    </div>
+  )
 
   return (
-    <div className="min-h-screen bg-gray-950">
-      <Navbar />
-      <div className="max-w-4xl mx-auto px-6 py-8">
-        <h1 className="text-2xl font-bold text-white mb-6">Transactions</h1>
+    <div className="flex min-h-screen bg-[#f5f4f0] dark:bg-[#0f1117]">
+      {sidebarOpen && (
+        <div className="fixed inset-0 bg-black/40 z-20 lg:hidden" onClick={() => setSidebarOpen(false)} />
+      )}
+      <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
 
-        {message && (
-          <p className={`text-sm mb-4 px-4 py-2 rounded-lg ${isError ? 'bg-red-500/10 text-red-400' : 'bg-green-500/10 text-green-400'}`}>
-            {message}
-          </p>
-        )}
-
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
-            <h2 className="text-white font-semibold mb-4">Add Transaction</h2>
-            <form onSubmit={handleAdd} className="flex flex-col gap-3">
-              <input
-                type="number"
-                placeholder="Amount (₹)"
-                value={form.amount}
-                onChange={e => setForm({ ...form, amount: e.target.value })}
-                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                required
-              />
-              <input
-                type="text"
-                placeholder="Description"
-                value={form.description}
-                onChange={e => setForm({ ...form, description: e.target.value })}
-                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-                required
-              />
-              <select
-                value={form.category}
-                onChange={e => setForm({ ...form, category: e.target.value })}
-                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-              >
-                {['food', 'transport', 'shopping', 'entertainment', 'health', 'utilities', 'other'].map(c => (
-                  <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
-                ))}
-              </select>
-              <input
-                type="date"
-                value={form.date}
-                max={new Date().toISOString().split('T')[0]}
-                onChange={e => setForm({ ...form, date: e.target.value })}
-                className="bg-gray-800 border border-gray-700 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"
-                required
-              />
-              <button
-                type="submit"
-                disabled={submitting}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-lg py-2 text-sm font-medium disabled:opacity-50"
-              >
-                {submitting ? 'Adding...' : 'Add Transaction'}
-              </button>
-            </form>
-          </div>
-
-          <div className="bg-gray-900 rounded-xl p-5 border border-gray-800">
-            <h2 className="text-white font-semibold mb-4">Upload CSV</h2>
-            <p className="text-gray-500 text-xs mb-3">CSV must have: amount, description, category, date</p>
-            <input
-              type="file"
-              accept=".csv"
-              onChange={e => setCsvFile(e.target.files?.[0] || null)}
-              className="text-sm text-gray-400 mb-3 w-full"
-            />
-            <button
-              onClick={handleCsvUpload}
-              disabled={!csvFile || uploading}
-              className="bg-green-600 hover:bg-green-700 text-white rounded-lg py-2 px-4 text-sm font-medium disabled:opacity-50 w-full"
-            >
-              {uploading ? 'Uploading...' : 'Upload CSV'}
-            </button>
+      <div className="flex-1 lg:ml-56 min-w-0">
+        {/* Mobile header */}
+        <div className="lg:hidden sticky top-0 z-10 bg-white dark:bg-[#13151f] border-b border-gray-100 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+          <button onClick={() => setSidebarOpen(true)} className="text-gray-500 dark:text-gray-400">
+            <svg width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </button>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
+              <span className="text-white text-xs font-bold">AI</span>
+            </div>
+            <span className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Finance</span>
           </div>
         </div>
 
-        <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-gray-800 text-gray-400 text-left">
-                <th className="px-4 py-3">Date</th>
-                <th className="px-4 py-3">Description</th>
-                <th className="px-4 py-3">Category</th>
-                <th className="px-4 py-3">Amount</th>
-                <th className="px-4 py-3"></th>
-              </tr>
-            </thead>
-            <tbody>
-              {transactions.length === 0 ? (
-                <tr><td colSpan={5} className="px-4 py-6 text-center text-gray-500">No transactions yet</td></tr>
-              ) : (
-                transactions.map(t => (
-                  <tr key={t.id} className="border-b border-gray-800 hover:bg-gray-800/50">
-                    <td className="px-4 py-3 text-gray-400">{t.date}</td>
-                    <td className="px-4 py-3 text-white">{t.description}</td>
-                    <td className="px-4 py-3">
-                      <span className="bg-gray-800 text-gray-300 px-2 py-0.5 rounded text-xs">{t.category}</span>
-                    </td>
-                    <td className="px-4 py-3 text-white font-medium">₹{parseFloat(t.amount).toFixed(2)}</td>
-                    <td className="px-4 py-3">
-                      <button onClick={() => handleDelete(t.id)} className="text-gray-600 hover:text-red-400 text-xs">Delete</button>
-                    </td>
+        <div className="p-4 lg:p-8">
+          <div className="mb-6 lg:mb-8">
+            <h1 className="text-xl font-semibold text-gray-900 dark:text-gray-100">Transactions</h1>
+            <p className="text-gray-400 text-sm mt-0.5">Manage your income and expenses</p>
+          </div>
+
+          {message && (
+            <div className={`mb-5 px-4 py-3 rounded-xl border text-sm font-medium ${isError ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'}`}>
+              {message}
+            </div>
+          )}
+
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 mb-5 lg:mb-6">
+            <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 lg:p-6">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">Add Transaction</h2>
+              <form onSubmit={handleAdd} className="flex flex-col gap-3">
+                <input
+                  type="number"
+                  placeholder="Amount (₹)"
+                  value={form.amount}
+                  onChange={e => setForm({ ...form, amount: e.target.value })}
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500"
+                  required
+                />
+                <input
+                  type="text"
+                  placeholder="Description"
+                  value={form.description}
+                  onChange={e => setForm({ ...form, description: e.target.value })}
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500"
+                  required
+                />
+                <select
+                  value={form.category}
+                  onChange={e => setForm({ ...form, category: e.target.value })}
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500"
+                >
+                  {['other', 'food', 'transport', 'shopping', 'entertainment', 'health', 'utilities'].map(c => (
+                    <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
+                  ))}
+                </select>
+                <input
+                  type="date"
+                  value={form.date}
+                  max={new Date().toISOString().split('T')[0]}
+                  onChange={e => setForm({ ...form, date: e.target.value })}
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500"
+                  required
+                />
+                <button
+                  type="submit"
+                  disabled={submitting}
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 transition-colors"
+                >
+                  {submitting ? 'Adding...' : 'Add Transaction'}
+                </button>
+              </form>
+            </div>
+
+            <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 lg:p-6">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Upload CSV</h2>
+              <p className="text-xs text-gray-400 mb-4">Supports standard CSV and bank statement format</p>
+              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-5 text-center mb-4">
+                <svg className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+                <p className="text-xs text-gray-400 mb-3">{csvFile ? csvFile.name : 'Choose a CSV file to upload'}</p>
+                <label className="cursor-pointer bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300 text-xs px-4 py-2 rounded-lg transition-colors">
+                  Browse File
+                  <input type="file" accept=".csv" className="hidden" onChange={e => setCsvFile(e.target.files?.[0] || null)} />
+                </label>
+              </div>
+              <button
+                onClick={handleCsvUpload}
+                disabled={!csvFile || uploading}
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-40 w-full transition-colors"
+              >
+                {uploading ? 'Uploading...' : 'Upload CSV'}
+              </button>
+            </div>
+          </div>
+
+          <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+            <div className="px-4 lg:px-6 py-4 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between">
+              <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">All Transactions</h2>
+              <span className="text-xs text-gray-400">{transactions.length} total</span>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm min-w-[500px]">
+                <thead>
+                  <tr className="text-xs text-gray-400 uppercase tracking-wide text-left">
+                    <th className="px-4 lg:px-6 py-3">Date</th>
+                    <th className="px-4 lg:px-6 py-3">Description</th>
+                    <th className="px-4 lg:px-6 py-3">Category</th>
+                    <th className="px-4 lg:px-6 py-3 text-right">Amount</th>
+                    <th className="px-4 lg:px-6 py-3"></th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
+                </thead>
+                <tbody>
+                  {transactions.length === 0 ? (
+                    <tr><td colSpan={5} className="px-6 py-10 text-center text-gray-400">No transactions yet</td></tr>
+                  ) : (
+                    transactions.map(t => (
+                      <tr key={t.id} className="border-t border-gray-50 dark:border-gray-800 hover:bg-gray-50/50 dark:hover:bg-gray-800/30">
+                        <td className="px-4 lg:px-6 py-3 text-gray-400 text-xs whitespace-nowrap">{t.date}</td>
+                        <td className="px-4 lg:px-6 py-3 text-gray-900 dark:text-gray-100 font-medium">{t.description}</td>
+                        <td className="px-4 lg:px-6 py-3">
+                          <span className={`px-2.5 py-1 rounded-full text-xs font-medium capitalize ${categoryStyle[t.category] ?? categoryStyle.other}`}>
+                            {t.category}
+                          </span>
+                        </td>
+                        <td className="px-4 lg:px-6 py-3 text-right font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">₹{parseFloat(t.amount).toFixed(2)}</td>
+                        <td className="px-4 lg:px-6 py-3 text-right">
+                          <button onClick={() => handleDelete(t.id)} className="text-gray-300 dark:text-gray-600 hover:text-red-500 dark:hover:text-red-400 text-xs transition-colors">Delete</button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </div>

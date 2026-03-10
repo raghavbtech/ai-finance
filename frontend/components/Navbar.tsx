@@ -17,6 +17,7 @@ export default function Navbar() {
         <Link href="/dashboard" className="hover:text-white">Dashboard</Link>
         <Link href="/transactions" className="hover:text-white">Transactions</Link>
         <Link href="/ai-insights" className="hover:text-white">AI Insights</Link>
+        <Link href="/faq" className="hover:text-white">FAQ</Link>
         <button onClick={logout} className="hover:text-red-400">Logout</button>
       </div>
     </nav>
