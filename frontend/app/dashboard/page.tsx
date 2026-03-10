@@ -88,11 +88,22 @@ export default function DashboardPage() {
       .finally(() => setLoading(false))
   }, [router])
 
+  const [budgetError, setBudgetError] = useState('')
+
   const saveBudget = async () => {
     if (!budgetInput) return
-    await api.post('/budget-alert/', { monthly_budget: budgetInput })
-    setBudgetInput('')
-    fetchBudgetAlert()
+    try {
+      await api.post('/budget-alert/', { monthly_budget: budgetInput })
+      setBudgetInput('')
+      setBudgetError('')
+      fetchBudgetAlert()
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { demo?: boolean; error?: string } } }
+      if (e.response?.data?.demo) {
+        setBudgetError(e.response.data.error as string)
+        setTimeout(() => setBudgetError(''), 4000)
+      }
+    }
   }
 
   const categoryData = transactions.reduce((acc: Record<string, number>, t) => {
@@ -166,6 +177,12 @@ export default function DashboardPage() {
               </button>
             </div>
           </div>
+
+          {budgetError && (
+            <div className="mb-4 px-4 py-3 rounded-xl border text-sm font-medium bg-orange-50 dark:bg-orange-900/20 border-orange-200 dark:border-orange-800 text-orange-700 dark:text-orange-400">
+              {budgetError}
+            </div>
+          )}
 
           {budgetAlert?.warning && (
             <div className={`mb-6 px-4 py-3 rounded-xl border text-sm font-medium ${

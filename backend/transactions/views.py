@@ -9,6 +9,11 @@ from .models import Transaction, Budget
 from .serializers import RegisterSerializer, TransactionSerializer, BudgetSerializer
 from ml_models.category_classifier import predict_category
 
+DEMO_BLOCKED = Response(
+    {'demo': True, 'error': 'This is a demo account. Create your own account for real interactions.'},
+    status=status.HTTP_403_FORBIDDEN
+)
+
 
 @api_view(['POST'])
 @permission_classes([AllowAny])
@@ -34,6 +39,8 @@ def transactions(request):
         return Response(serializer.data)
 
     if request.method == 'POST':
+        if request.user.username == 'demo':
+            return DEMO_BLOCKED
         data = request.data.copy()
         if not data.get('category') or data.get('category') == 'other':
             data['category'] = predict_category(data.get('description', ''))
@@ -47,6 +54,8 @@ def transactions(request):
 @api_view(['DELETE'])
 @permission_classes([IsAuthenticated])
 def delete_transaction(request, pk):
+    if request.user.username == 'demo':
+        return DEMO_BLOCKED
     try:
         t = Transaction.objects.get(pk=pk, user=request.user)
     except Transaction.DoesNotExist:
@@ -59,6 +68,8 @@ def delete_transaction(request, pk):
 @permission_classes([IsAuthenticated])
 def budget_alert(request):
     if request.method == 'POST':
+        if request.user.username == 'demo':
+            return DEMO_BLOCKED
         try:
             budget_obj = Budget.objects.get(user=request.user)
             serializer = BudgetSerializer(budget_obj, data=request.data)

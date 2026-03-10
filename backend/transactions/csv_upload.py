@@ -47,6 +47,12 @@ def normalize_bank_statement(df):
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def upload_csv(request):
+    if request.user.username == 'demo':
+        from rest_framework import status as drf_status
+        return Response(
+            {'demo': True, 'error': 'This is a demo account. Create your own account for real interactions.'},
+            status=drf_status.HTTP_403_FORBIDDEN
+        )
     file = request.FILES.get('file')
 
     if not file:

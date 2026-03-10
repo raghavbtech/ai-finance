@@ -47,6 +47,14 @@ const faqs = [
     ],
   },
   {
+    section: 'Demo Account',
+    items: [
+      { q: 'What is the demo account?', a: 'The demo account (username: demo, password: demo123) lets you explore all features without signing up. It comes pre-loaded with 3 months of realistic transactions, a set budget, and an anomalous transaction so you can see anomaly detection in action.' },
+      { q: 'Can the demo account add or delete transactions?', a: 'No. The demo account is read-only. If you try to add, delete, or upload CSV transactions, you will see a message: "This is a demo account. Create your own account for real interactions."' },
+      { q: 'How do I get my own account?', a: 'On the login page, click Register, choose a username and password (minimum 6 characters), and you are ready. Your data is completely separate from the demo account.' },
+    ],
+  },
+  {
     section: 'Account',
     items: [
       { q: 'How do I create an account?', a: 'Go to the Login page, click Register, enter a username and password (minimum 6 characters).' },

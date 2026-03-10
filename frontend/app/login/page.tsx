@@ -10,6 +10,21 @@ export default function LoginPage() {
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
 
+  const doLogin = async (username: string, password: string) => {
+    setError('')
+    setLoading(true)
+    try {
+      const res = await api.post('/login/', { username, password })
+      localStorage.setItem('access_token', res.data.access)
+      router.push('/dashboard')
+    } catch (err: unknown) {
+      const e = err as { response?: { data?: { detail?: string } } }
+      setError(e.response?.data?.detail || 'Something went wrong')
+    } finally {
+      setLoading(false)
+    }
+  }
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -18,16 +33,15 @@ export default function LoginPage() {
       if (isRegister) {
         await api.post('/register/', form)
       }
-      const res = await api.post('/login/', form)
-      localStorage.setItem('access_token', res.data.access)
-      router.push('/dashboard')
+      await doLogin(form.username, form.password)
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { detail?: string } } }
-      setError(error.response?.data?.detail || 'Something went wrong')
-    } finally {
+      const e = err as { response?: { data?: { detail?: string } } }
+      setError(e.response?.data?.detail || 'Something went wrong')
       setLoading(false)
     }
   }
+
+  const tryDemo = () => doLogin('demo', 'demo123')
 
   return (
     <div className="min-h-screen bg-[#f5f4f0] dark:bg-[#0f1117] flex items-center justify-center px-4">
@@ -37,6 +51,24 @@ export default function LoginPage() {
             <span className="text-white font-bold text-sm">AI</span>
           </div>
           <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">Finance</span>
+        </div>
+
+        {/* Demo callout */}
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-4 mb-4">
+          <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-0.5">Try the demo</p>
+          <p className="text-xs text-blue-500 dark:text-blue-400 mb-3">
+            Explore all features with pre-loaded data — no sign up needed.
+          </p>
+          <button
+            onClick={tryDemo}
+            disabled={loading}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 rounded-xl font-medium transition-colors disabled:opacity-50"
+          >
+            {loading ? 'Signing in...' : 'Try Demo Account'}
+          </button>
+          <p className="text-center text-xs text-blue-400 dark:text-blue-500 mt-2">
+            username: <span className="font-mono font-medium">demo</span> · password: <span className="font-mono font-medium">demo123</span>
+          </p>
         </div>
 
         <div className="bg-white dark:bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">

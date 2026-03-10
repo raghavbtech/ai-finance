@@ -53,6 +53,17 @@ export default function TransactionsPage() {
     setTimeout(() => setMessage(''), 4000)
   }
 
+  const getDemoOrError = (err: unknown, fallback: string): string => {
+    const e = err as { response?: { data?: { demo?: boolean; error?: string } & Record<string, string[]> } }
+    const data = e.response?.data
+    if (data?.demo) return data.error as string
+    if (data) {
+      const first = Object.values(data)[0]
+      return Array.isArray(first) ? first[0] : fallback
+    }
+    return fallback
+  }
+
   const handleAdd = async (e: React.FormEvent) => {
     e.preventDefault()
     setSubmitting(true)
@@ -62,22 +73,19 @@ export default function TransactionsPage() {
       showMessage('Transaction added successfully')
       await fetchTransactions()
     } catch (err: unknown) {
-      const e = err as { response?: { data?: Record<string, string[]> } }
-      const data = e.response?.data
-      if (data) {
-        const first = Object.values(data)[0]
-        showMessage(Array.isArray(first) ? first[0] : 'Failed to add transaction', true)
-      } else {
-        showMessage('Failed to add transaction', true)
-      }
+      showMessage(getDemoOrError(err, 'Failed to add transaction'), true)
     } finally {
       setSubmitting(false)
     }
   }
 
   const handleDelete = async (id: number) => {
-    await api.delete(`/transactions/${id}/`)
-    setTransactions(prev => prev.filter(t => t.id !== id))
+    try {
+      await api.delete(`/transactions/${id}/`)
+      setTransactions(prev => prev.filter(t => t.id !== id))
+    } catch (err: unknown) {
+      showMessage(getDemoOrError(err, 'Failed to delete transaction'), true)
+    }
   }
 
   const handleCsvUpload = async () => {
@@ -89,8 +97,8 @@ export default function TransactionsPage() {
       const res = await api.post('/upload-csv/', formData)
       showMessage(res.data.message)
       await fetchTransactions()
-    } catch {
-      showMessage('CSV upload failed', true)
+    } catch (err: unknown) {
+      showMessage(getDemoOrError(err, 'CSV upload failed'), true)
     } finally {
       setUploading(false)
       setCsvFile(null)
