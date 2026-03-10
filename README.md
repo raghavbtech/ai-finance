@@ -1,33 +1,35 @@
-# AI Financial Intelligence Platform
+# AI Finance — AI-Powered Personal Finance Platform
 
-A full-stack web app for managing personal finances with AI-powered insights.
-Built with Django, Next.js, and scikit-learn.
+A full-stack personal finance management app with machine learning features: anomaly detection, expense prediction, and automatic transaction categorization.
 
-The idea came from wanting to understand where my money actually goes each month,
-and whether any transaction looks suspicious compared to my usual spending patterns.
+The idea came from wanting to understand where my money actually goes each month, and whether any transaction looks suspicious compared to my usual spending patterns.
+
+> **Try it instantly** — use `demo` / `demo123` on the login page. No sign up needed.
 
 ---
 
-## What it does
+## Features
 
-- Add transactions manually or upload a CSV from your bank
-- Dashboard shows spending breakdowns and monthly trends
-- AI detects unusual transactions (e.g. a ₹9000 purchase when you usually spend ₹300-800)
-- Predicts next month's spending based on your history
-- Set a monthly budget and get warned when you're close to hitting it
-- Auto-detects transaction category from the description (e.g. "Swiggy order" → Food)
+- **Dashboard** — monthly spending summary, category breakdown (pie chart), monthly trend (bar chart), budget alerts
+- **Transactions** — add, delete, and manage transactions; CSV upload with bank statement auto-detection
+- **AI Insights** — Isolation Forest anomaly detection + Linear Regression expense prediction
+- **Auto Category** — TF-IDF + Logistic Regression classifies transactions from description automatically
+- **Budget Alerts** — set a monthly budget, get warnings at 80% and 100% usage
+- **Demo Account** — pre-loaded with 3 months of realistic data; read-only so the data stays intact for everyone
+- **Dark Mode** — full dark/light theme toggle, persisted to localStorage
+- **Mobile Responsive** — slide-in sidebar, responsive layouts for all screen sizes
 
 ---
 
 ## Tech Stack
 
-**Frontend** — Next.js, TailwindCSS, Recharts
-
-**Backend** — Django, Django REST Framework, JWT authentication
-
-**ML** — scikit-learn (Isolation Forest, Linear Regression, TF-IDF + Logistic Regression)
-
-**Database** — PostgreSQL
+| Layer | Technology |
+|---|---|
+| Frontend | Next.js 15, TypeScript, TailwindCSS v4, Recharts |
+| Backend | Django 5.1, Django REST Framework, SimpleJWT |
+| Database | PostgreSQL (Neon — serverless, free forever) |
+| ML | scikit-learn — Isolation Forest, Linear Regression, TF-IDF + Logistic Regression |
+| Deployment | Render (backend) + Vercel (frontend) |
 
 ---
 
@@ -36,13 +38,26 @@ and whether any transaction looks suspicious compared to my usual spending patte
 ```
 Ai-Finance/
 ├── backend/
-│   ├── finance_ai/         # Django project config
-│   ├── transactions/       # Transaction model, auth, CSV upload, budget
-│   └── ml_models/          # Anomaly detection, prediction, category classifier
+│   ├── finance_ai/          # Django project config (settings, urls)
+│   ├── transactions/        # Transaction & Budget models, API views, CSV upload
+│   │   └── management/
+│   │       └── commands/
+│   │           └── create_demo_user.py   # Seeds demo account on deploy
+│   ├── ml_models/           # Anomaly detection, expense prediction, category classifier
+│   ├── build.sh             # Render build script (install, migrate, seed demo)
+│   └── requirements.txt
 └── frontend/
-    ├── app/                # Next.js pages (login, dashboard, transactions, ai-insights)
-    ├── components/         # Navbar
-    └── services/           # Axios API client
+    ├── app/
+    │   ├── dashboard/       # Main dashboard with charts and budget
+    │   ├── transactions/    # Transaction management + CSV upload
+    │   ├── ai-insights/     # ML anomaly detection + prediction views
+    │   ├── faq/             # FAQ accordion
+    │   └── login/           # Auth page with one-click demo button
+    ├── components/
+    │   ├── Sidebar.tsx      # Responsive sidebar with mobile slide-in
+    │   └── ThemeProvider.tsx
+    └── services/
+        └── api.ts           # Axios instance with JWT interceptors
 ```
 
 ---
@@ -51,7 +66,7 @@ Ai-Finance/
 
 ### Prerequisites
 
-- Python 3.10+
+- Python 3.11+
 - Node.js 18+
 - PostgreSQL
 
@@ -69,7 +84,7 @@ cd backend
 pip install -r requirements.txt
 ```
 
-Create a `.env` file in the `backend/` folder:
+Create a `.env` file in `backend/`:
 
 ```
 SECRET_KEY=your-secret-key-here
@@ -89,10 +104,11 @@ CREATE USER finance_user WITH PASSWORD 'your_password';
 GRANT ALL PRIVILEGES ON DATABASE finance_ai_db TO finance_user;
 ```
 
-Run migrations and start the server:
+Run migrations, seed the demo user, and start the server:
 
 ```bash
 python manage.py migrate
+python manage.py create_demo_user
 python manage.py runserver
 ```
 
@@ -103,6 +119,15 @@ Backend runs at `http://127.0.0.1:8000`
 ```bash
 cd frontend
 npm install
+```
+
+Create a `.env.local` file in `frontend/`:
+
+```
+NEXT_PUBLIC_API_URL=http://localhost:8000/api
+```
+
+```bash
 npm run dev
 ```
 
@@ -110,25 +135,39 @@ Frontend runs at `http://localhost:3000`
 
 ---
 
+## Demo Account
+
+The demo account is automatically seeded on every deploy via the `create_demo_user` management command. It contains:
+
+- 23 transactions across January–March 2026
+- All 6 categories represented (Food, Transport, Shopping, Entertainment, Health, Utilities)
+- One ₹9,200 anomaly (flight booking) that gets flagged by Isolation Forest
+- A ₹5,000 monthly budget pre-configured
+
+The demo account is **read-only**. Any attempt to add, delete, or upload transactions returns:
+> *"This is a demo account. Create your own account for real interactions."*
+
+---
+
 ## API Endpoints
 
 | Method | Endpoint | Description |
-|--------|----------|-------------|
+|---|---|---|
 | POST | `/api/register/` | Create account |
 | POST | `/api/login/` | Login, returns JWT token |
 | GET/POST | `/api/transactions/` | List or add transactions |
 | DELETE | `/api/transactions/<id>/` | Delete a transaction |
 | POST | `/api/upload-csv/` | Bulk import via CSV |
-| GET | `/api/anomalies/` | Get flagged transactions |
-| GET | `/api/predictions/` | Get next month prediction |
-| GET | `/api/dashboard-summary/` | Summary stats for dashboard |
 | GET/POST | `/api/budget-alert/` | Get or set monthly budget |
+| GET | `/api/dashboard-summary/` | Current month stats + prediction |
+| GET | `/api/anomalies/` | Flagged unusual transactions |
+| GET | `/api/predictions/` | Monthly history + next month estimate |
 
 ---
 
 ## CSV Format
 
-To upload transactions via CSV, the file must have these columns:
+Standard format:
 
 ```
 amount,description,category,date
@@ -137,32 +176,29 @@ amount,description,category,date
 9000,New phone,shopping,2026-03-10
 ```
 
-Dates must not be in the future. Invalid rows are skipped and reported in the response.
+Bank statement format is also supported — if your CSV has `date`, `details`, `debit`, `credit`, `balance` columns, the app auto-detects it and imports only debit rows.
 
 ---
 
-## How the ML works
+## How the ML Works
 
-**Anomaly Detection**
-Uses Isolation Forest from scikit-learn. It trains on the user's transaction amounts and flags anything that's statistically unusual. A ₹9000 transaction when everything else is ₹300-800 will get flagged.
+**Anomaly Detection** — Isolation Forest trained on the user's transaction amounts. Flags anything statistically unusual. A ₹9,000 transaction when everything else is ₹300–800 gets flagged. Requires at least 5 transactions.
 
-**Expense Prediction**
-Groups transactions by month, then fits a Linear Regression model on the monthly totals. Predicts the next month by extending the trend line.
+**Expense Prediction** — Groups transactions by month, fits a Linear Regression model on the monthly totals, and extends the trend to predict next month. Requires data across at least 2 different months.
 
-**Auto Category Detection**
-A TF-IDF vectorizer converts the transaction description into a numeric vector, then a Logistic Regression classifier predicts the category. Trained on common Indian transaction descriptions like "Swiggy order", "Uber ride", "Amazon purchase", etc.
+**Auto Category Detection** — TF-IDF vectorizer converts the transaction description to a numeric vector, then Logistic Regression classifies it. Trained on common Indian transaction descriptions like "Swiggy order" → Food, "Uber ride" → Transport, "Amazon purchase" → Shopping.
 
 ---
 
-## Screenshots
+## Deployment
 
-*(coming soon)*
+- **Backend** — Render Web Service, Python 3.11 (pinned via `.python-version`), `build.sh` runs install + migrate + demo seed
+- **Database** — Neon PostgreSQL (free tier, no 90-day expiry)
+- **Frontend** — Vercel, set `NEXT_PUBLIC_API_URL` environment variable to your Render backend URL
 
 ---
 
 ## Roadmap
-
-Things I want to add next:
 
 - SMS transaction parsing
 - Recurring expense detection
