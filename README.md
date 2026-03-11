@@ -11,7 +11,7 @@
 [![Deployed on Vercel](https://img.shields.io/badge/Frontend-Vercel-black?style=flat-square&logo=vercel)](https://vercel.com)
 [![Deployed on Render](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render&logoColor=white)](https://render.com)
 
-[Live Demo](https://ai-finance-delta.vercel.app) — login with `demo` / `demo123`, no sign up needed.
+[Live Demo](ai-finance-three-ivory.vercel.app) — login with `demo` / `demo123`, no sign up needed.
 
 </div>
 
