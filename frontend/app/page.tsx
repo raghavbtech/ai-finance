@@ -1,6 +1,7 @@
 'use client'
 import { useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import api from '@/services/api'
 
 export default function Home() {
   const router = useRouter()
@@ -10,7 +11,12 @@ export default function Home() {
     if (token) {
       router.push('/dashboard')
     } else {
-      router.push('/login')
+      api.post('/login/', { username: 'demo', password: 'demo123' })
+        .then(res => {
+          localStorage.setItem('access_token', res.data.access)
+router.push('/dashboard')
+        })
+        .catch(() => router.push('/login'))
     }
   }, [router])
 
