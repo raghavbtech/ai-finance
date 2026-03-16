@@ -1,8 +1,8 @@
 <div align="center">
 
-# AI Finance
+# FinSight AI
 
-**AI-powered personal finance platform**
+**Financial analysis powered by machine learning**
 
 [![Django](https://img.shields.io/badge/Django_5.1-092E20?style=flat-square&logo=django&logoColor=white)](https://djangoproject.com)
 [![Next.js](https://img.shields.io/badge/Next.js_15-black?style=flat-square&logo=next.js&logoColor=white)](https://nextjs.org)
@@ -19,7 +19,7 @@
 
 ## Overview
 
-AI Finance lets you track transactions, detect unusual spending, and predict next month's expenses — all backed by real scikit-learn ML models running server-side. No paid AI APIs.
+FinSight AI lets you track transactions, detect unusual spending, and predict next month's expenses — all backed by real scikit-learn ML models running server-side. No paid AI APIs.
 
 Built with Django on the backend, Next.js on the frontend, and PostgreSQL on Neon for the database.
 
