@@ -3,8 +3,8 @@ import './globals.css'
 import { ThemeProvider } from '@/components/ThemeProvider'
 
 export const metadata: Metadata = {
-  title: 'AI Finance',
-  description: 'AI Financial Intelligence Platform',
+  title: 'FinSight AI — AI-Powered Financial Trend Analysis',
+  description: 'Machine learning driven financial analysis platform. Compare Linear Regression, Random Forest, and ANN models on your financial data.',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

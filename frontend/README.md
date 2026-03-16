@@ -1,4 +1,4 @@
-This is the Next.js frontend for the AI Finance project. See the [root README](../README.md) for full setup and documentation.
+This is the Next.js frontend for FinSight AI. See the [root README](../README.md) for full setup and documentation.
 
 ## Quick Start
 
