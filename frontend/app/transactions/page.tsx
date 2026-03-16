@@ -106,14 +106,14 @@ export default function TransactionsPage() {
   }
 
   if (loading) return (
-    <div className="flex min-h-screen bg-[#f5f4f0] dark:bg-[#0f1117]">
+    <div className="flex min-h-screen bg-white dark:bg-[#0f1117]">
       <Sidebar />
       <div className="flex-1 lg:ml-56 flex items-center justify-center text-gray-400 text-sm">Loading...</div>
     </div>
   )
 
   return (
-    <div className="flex min-h-screen bg-[#f5f4f0] dark:bg-[#0f1117]">
+    <div className="flex min-h-screen bg-white dark:bg-[#0f1117]">
       {sidebarOpen && (
         <div className="fixed inset-0 bg-black/40 z-20 lg:hidden" onClick={() => setSidebarOpen(false)} />
       )}
@@ -127,12 +127,7 @@ export default function TransactionsPage() {
               <path d="M4 6h16M4 12h16M4 18h16" />
             </svg>
           </button>
-          <div className="flex items-center gap-2">
-            <div className="w-7 h-7 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white text-xs font-bold">AI</span>
-            </div>
-            <span className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Finance</span>
-          </div>
+          <span className="font-semibold text-gray-900 dark:text-gray-100 text-sm">FinSight AI</span>
         </div>
 
         <div className="p-4 lg:p-8">
@@ -142,13 +137,13 @@ export default function TransactionsPage() {
           </div>
 
           {message && (
-            <div className={`mb-5 px-4 py-3 rounded-xl border text-sm font-medium ${isError ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'}`}>
+            <div className={`mb-5 px-4 py-3 rounded-md border text-sm font-medium ${isError ? 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-600 dark:text-red-400' : 'bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800 text-green-700 dark:text-green-400'}`}>
               {message}
             </div>
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 mb-5 lg:mb-6">
-            <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 lg:p-6">
+            <div className="bg-white dark:bg-[#1a1d27] rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm p-4 lg:p-6">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-4">Add Transaction</h2>
               <form onSubmit={handleAdd} className="flex flex-col gap-3">
                 <input
@@ -156,7 +151,7 @@ export default function TransactionsPage() {
                   placeholder="Amount (₹)"
                   value={form.amount}
                   onChange={e => setForm({ ...form, amount: e.target.value })}
-                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500"
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-md px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500"
                   required
                 />
                 <input
@@ -164,13 +159,13 @@ export default function TransactionsPage() {
                   placeholder="Description"
                   value={form.description}
                   onChange={e => setForm({ ...form, description: e.target.value })}
-                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500"
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-md px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500"
                   required
                 />
                 <select
                   value={form.category}
                   onChange={e => setForm({ ...form, category: e.target.value })}
-                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500"
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-md px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500"
                 >
                   {['other', 'food', 'transport', 'shopping', 'entertainment', 'health', 'utilities'].map(c => (
                     <option key={c} value={c}>{c.charAt(0).toUpperCase() + c.slice(1)}</option>
@@ -181,23 +176,23 @@ export default function TransactionsPage() {
                   value={form.date}
                   max={new Date().toISOString().split('T')[0]}
                   onChange={e => setForm({ ...form, date: e.target.value })}
-                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500"
+                  className="border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-md px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 focus:outline-none focus:border-blue-500"
                   required
                 />
                 <button
                   type="submit"
                   disabled={submitting}
-                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 transition-colors"
+                  className="bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2.5 text-sm font-medium disabled:opacity-50 transition-colors"
                 >
                   {submitting ? 'Adding...' : 'Add Transaction'}
                 </button>
               </form>
             </div>
 
-            <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 lg:p-6">
+            <div className="bg-white dark:bg-[#1a1d27] rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm p-4 lg:p-6">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100 mb-2">Upload CSV</h2>
               <p className="text-xs text-gray-400 mb-4">Supports standard CSV and bank statement format</p>
-              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl p-5 text-center mb-4">
+              <div className="border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-md p-5 text-center mb-4">
                 <svg className="w-8 h-8 text-gray-300 dark:text-gray-600 mx-auto mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
                 </svg>
@@ -210,14 +205,14 @@ export default function TransactionsPage() {
               <button
                 onClick={handleCsvUpload}
                 disabled={!csvFile || uploading}
-                className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-40 w-full transition-colors"
+                className="bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2.5 text-sm font-medium disabled:opacity-40 w-full transition-colors"
               >
                 {uploading ? 'Uploading...' : 'Upload CSV'}
               </button>
             </div>
           </div>
 
-          <div className="bg-white dark:bg-[#1a1d27] rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+          <div className="bg-white dark:bg-[#1a1d27] rounded-lg border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
             <div className="px-4 lg:px-6 py-4 border-b border-gray-50 dark:border-gray-800 flex items-center justify-between">
               <h2 className="text-sm font-semibold text-gray-900 dark:text-gray-100">All Transactions</h2>
               <span className="text-xs text-gray-400">{transactions.length} total</span>

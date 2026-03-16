@@ -58,18 +58,13 @@ export default function Sidebar({ open = false, onClose }: SidebarProps) {
 
   const logout = () => {
     localStorage.removeItem('access_token')
-    router.push('/login')
+    router.push('/')
   }
 
   return (
     <aside className={`fixed top-0 left-0 h-screen w-56 bg-white dark:bg-[#13151f] border-r border-gray-100 dark:border-gray-800 flex flex-col z-30 transition-transform duration-200 lg:translate-x-0 ${open ? 'translate-x-0' : '-translate-x-full'}`}>
       <div className="px-6 py-6 flex items-center justify-between">
-        <div className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white text-sm font-bold">AI</span>
-          </div>
-          <span className="font-semibold text-gray-900 dark:text-gray-100 text-base">Finance</span>
-        </div>
+        <span className="font-semibold text-gray-900 dark:text-gray-100 text-base">FinSight AI</span>
         <button
           onClick={onClose}
           className="lg:hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 p-1"

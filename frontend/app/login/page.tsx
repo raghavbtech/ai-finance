@@ -44,17 +44,14 @@ export default function LoginPage() {
   const tryDemo = () => doLogin('demo', 'demo123')
 
   return (
-    <div className="min-h-screen bg-[#f5f4f0] dark:bg-[#0f1117] flex items-center justify-center px-4">
+    <div className="min-h-screen bg-white dark:bg-[#0f1117] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <div className="flex items-center gap-2 justify-center mb-8">
-          <div className="w-9 h-9 bg-blue-600 rounded-xl flex items-center justify-center">
-            <span className="text-white font-bold text-sm">AI</span>
-          </div>
-          <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">Finance</span>
+        <div className="text-center mb-8">
+          <span className="text-xl font-semibold text-gray-900 dark:text-gray-100">FinSight AI</span>
         </div>
 
         {/* Demo callout */}
-        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-2xl p-4 mb-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 mb-4">
           <p className="text-xs font-medium text-blue-700 dark:text-blue-300 mb-0.5">Try the demo</p>
           <p className="text-xs text-blue-500 dark:text-blue-400 mb-3">
             Explore all features with pre-loaded data — no sign up needed.
@@ -62,7 +59,7 @@ export default function LoginPage() {
           <button
             onClick={tryDemo}
             disabled={loading}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 rounded-xl font-medium transition-colors disabled:opacity-50"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm py-2 rounded-md font-medium transition-colors disabled:opacity-50"
           >
             {loading ? 'Signing in...' : 'Try Demo Account'}
           </button>
@@ -71,7 +68,7 @@ export default function LoginPage() {
           </p>
         </div>
 
-        <div className="bg-white dark:bg-[#1a1d27] rounded-2xl shadow-sm border border-gray-100 dark:border-gray-800 p-8">
+        <div className="bg-white dark:bg-[#1a1d27] rounded-lg shadow-sm border border-gray-100 dark:border-gray-800 p-8">
           <h1 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-1">
             {isRegister ? 'Create an account' : 'Welcome back'}
           </h1>
@@ -87,7 +84,7 @@ export default function LoginPage() {
                 placeholder="Enter username"
                 value={form.username}
                 onChange={e => setForm({ ...form, username: e.target.value })}
-                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-md px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 required
               />
             </div>
@@ -98,7 +95,7 @@ export default function LoginPage() {
                 placeholder="Enter password"
                 value={form.password}
                 onChange={e => setForm({ ...form, password: e.target.value })}
-                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-xl px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
+                className="w-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-[#13151f] rounded-md px-4 py-2.5 text-sm text-gray-900 dark:text-gray-100 placeholder-gray-300 dark:placeholder-gray-600 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500"
                 required
               />
             </div>
@@ -108,7 +105,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="bg-blue-600 hover:bg-blue-700 text-white rounded-xl py-2.5 text-sm font-medium disabled:opacity-50 transition-colors mt-1"
+              className="bg-blue-600 hover:bg-blue-700 text-white rounded-md py-2.5 text-sm font-medium disabled:opacity-50 transition-colors mt-1"
             >
               {loading ? 'Please wait...' : isRegister ? 'Create account' : 'Sign in'}
             </button>
