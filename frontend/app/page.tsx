@@ -136,27 +136,27 @@ export default function LandingPage() {
         <h2 className="text-xl font-semibold mb-8">How it works</h2>
         <div className="grid sm:grid-cols-5 gap-6 text-sm">
           <div>
-            <p className="text-2xl font-bold text-gray-100 mb-1">1</p>
+            <p className="text-2xl font-bold text-black-100 mb-1">1</p>
             <p className="font-medium text-gray-800 mb-1">Upload</p>
             <p className="text-gray-400 text-xs">Drop in a CSV from your bank or add transactions manually.</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-100 mb-1">2</p>
+            <p className="text-2xl font-bold text-black-100 mb-1">2</p>
             <p className="font-medium text-gray-800 mb-1">Preprocess</p>
             <p className="text-gray-400 text-xs">Data gets cleaned, normalized, and split for training.</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-100 mb-1">3</p>
+            <p className="text-2xl font-bold text-black-100 mb-1">3</p>
             <p className="font-medium text-gray-800 mb-1">Train</p>
             <p className="text-gray-400 text-xs">Both models train on your data independently.</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-100 mb-1">4</p>
+            <p className="text-2xl font-bold text-black-100 mb-1">4</p>
             <p className="font-medium text-gray-800 mb-1">Evaluate</p>
             <p className="text-gray-400 text-xs">Results compared using MAE, MSE and R² scores.</p>
           </div>
           <div>
-            <p className="text-2xl font-bold text-gray-100 mb-1">5</p>
+            <p className="text-2xl font-bold text-black-100 mb-1">5</p>
             <p className="font-medium text-gray-800 mb-1">Explore</p>
             <p className="text-gray-400 text-xs">View predictions, anomalies, and charts on the dashboard.</p>
           </div>
