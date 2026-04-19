@@ -43,6 +43,15 @@ type BudgetAlert = {
   warning: string | null
 }
 
+type HealthScore = {
+  score: number
+  category: string
+  savings_ratio: number
+  emi_burden: number
+  monthly_income: number
+  monthly_expense: number
+}
+
 const tooltipStyle = {
   background: '#fff',
   border: '1px solid #e5e7eb',
@@ -64,6 +73,7 @@ export default function DashboardPage() {
   const [transactions, setTransactions] = useState<Transaction[]>([])
   const [summary, setSummary] = useState<Summary | null>(null)
   const [budgetAlert, setBudgetAlert] = useState<BudgetAlert | null>(null)
+  const [healthScore, setHealthScore] = useState<HealthScore | null>(null)
   const [budgetInput, setBudgetInput] = useState('')
   const [loading, setLoading] = useState(true)
   const [budgetError, setBudgetError] = useState('')
@@ -79,11 +89,13 @@ export default function DashboardPage() {
       api.get('/transactions/'),
       api.get('/dashboard-summary/'),
       api.get('/budget-alert/'),
+      api.get('/health-score/'),
     ])
-      .then(([txRes, sumRes, budgetRes]) => {
+      .then(([txRes, sumRes, budgetRes, healthRes]) => {
         setTransactions(txRes.data)
         setSummary(sumRes.data)
         setBudgetAlert(budgetRes.data)
+        setHealthScore(healthRes.data)
       })
       .catch(() => router.push('/login'))
       .finally(() => setLoading(false))
@@ -221,6 +233,53 @@ export default function DashboardPage() {
               </p>
             </div>
           </div>
+
+          {/* Health Score Card */}
+          {healthScore && (
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 dark:from-indigo-900/20 dark:to-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-6 mb-6">
+              <div className="flex items-start justify-between">
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 font-medium mb-2">Financial Health Score</p>
+                  <div className="flex items-end gap-3">
+                    <p className="text-4xl font-bold text-blue-600 dark:text-blue-400">{healthScore.score}</p>
+                    <div>
+                      <p className="text-sm font-semibold text-gray-900 dark:text-gray-100">{healthScore.category}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">Savings: {healthScore.savings_ratio}% • EMI: {healthScore.emi_burden}%</p>
+                    </div>
+                  </div>
+                </div>
+                <div className="relative w-32 h-32">
+                  <svg className="w-full h-full" viewBox="0 0 120 120">
+                    <circle cx="60" cy="60" r="54" fill="none" stroke="#e5e7eb" strokeWidth="8" />
+                    <circle
+                      cx="60"
+                      cy="60"
+                      r="54"
+                      fill="none"
+                      stroke={healthScore.score >= 80 ? '#10b981' : healthScore.score >= 60 ? '#3b82f6' : healthScore.score >= 40 ? '#f59e0b' : '#ef4444'}
+                      strokeWidth="8"
+                      strokeDasharray={`${(healthScore.score / 100) * 339.29} 339.29`}
+                      strokeLinecap="round"
+                      transform="rotate(-90 60 60)"
+                    />
+                    <text x="60" y="65" textAnchor="middle" className="text-sm font-bold fill-gray-900 dark:fill-gray-100">
+                      {healthScore.score}%
+                    </text>
+                  </svg>
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4 mt-4 pt-4 border-t border-blue-200 dark:border-blue-800">
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Monthly Income</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">₹{healthScore.monthly_income.toLocaleString('en-IN', {maximumFractionDigits: 0})}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mb-1">Monthly Expense</p>
+                  <p className="text-lg font-semibold text-gray-900 dark:text-gray-100">₹{healthScore.monthly_expense.toLocaleString('en-IN', {maximumFractionDigits: 0})}</p>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Charts */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-5 mb-5">
